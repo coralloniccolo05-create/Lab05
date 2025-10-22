@@ -2,6 +2,7 @@ import flet as ft
 from alert import AlertManager
 from autonoleggio import Autonoleggio
 
+
 FILE_AUTO = "automobili.csv"
 
 def main(page: ft.Page):
@@ -37,6 +38,9 @@ def main(page: ft.Page):
 
     # Tutti i TextField per le info necessarie per aggiungere una nuova automobile (marca, modello, anno, contatore posti)
     # TODO
+    input_aggiungi_marca = ft.TextField(value='Marca', label="Marca")
+    input_aggiungi_modello = ft.TextField(value='Modello', label="Modello")
+    input_aggiungi_anno = ft.TextField(value='Anno', label="Anno")
 
     # --- FUNZIONI APP ---
     def aggiorna_lista_auto():
@@ -59,6 +63,38 @@ def main(page: ft.Page):
 
     # Handlers per la gestione dei bottoni utili all'inserimento di una nuova auto
     # TODO
+    def handleAdd(e):
+        currentVal = num_posti.value
+        num_posti.value = currentVal + 1
+        num_posti.update()
+
+    def handleRemove(e):
+        currentVal = num_posti.value
+        num_posti.value = currentVal - 1
+        num_posti.update()
+
+    def aggiungi_automobile(e):
+        try:
+            if int(input_aggiungi_anno.value) > 0:
+                nuova_auto = aggiungi_automobile(input_aggiungi_marca, input_aggiungi_modello, input_aggiungi_anno, num_posti.value)
+                input_aggiungi_marca = ''
+                input_aggiungi_modello = ' '
+                input_aggiungi_anno = ' '
+        except ValueError:
+            raise Exception(f"Anno non valido")
+
+        # aggiungo contatore
+    btnMinus = ft.IconButton(icon=ft.Icons.REMOVE,
+                             icon_color="red",
+                             icon_size=24, on_click=handleRemove)
+    btnAdd = ft.IconButton(icon=ft.Icons.ADD,
+                           icon_color="green",
+                           icon_size=24, on_click=handleAdd)
+    num_posti = ft.TextField(width=100, disabled=True,
+                          value=0, border_color="green",
+                          text_align=ft.TextAlign.CENTER)
+    contatore_posti = ft.Row([btnMinus, num_posti, btnAdd],
+                             alignment=ft.MainAxisAlignment.CENTER)
 
     # --- EVENTI ---
     toggle_cambia_tema = ft.Switch(label="Tema scuro", value=True, on_change=cambia_tema)
@@ -66,6 +102,8 @@ def main(page: ft.Page):
 
     # Bottoni per la gestione dell'inserimento di una nuova auto
     # TODO
+    pulsante_aggiungi_auto = ft.ElevatedButton("Aggiungi automobile", on_click=aggiungi_automobile)
+
 
     # --- LAYOUT ---
     page.add(
@@ -84,6 +122,13 @@ def main(page: ft.Page):
 
         # Sezione 3
         # TODO
+        ft.Text("Aggiungi auto", size=20),
+        ft.Row(spacing=20,
+               controls=[input_aggiungi_marca, input_aggiungi_modello, input_aggiungi_anno, contatore_posti],
+               alignment=ft.MainAxisAlignment.CENTER),
+        ft.Row(spacing=20,
+               controls=[pulsante_aggiungi_auto],
+               alignment=ft.MainAxisAlignment.CENTER),
 
         # Sezione 4
         ft.Divider(),
