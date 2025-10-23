@@ -75,13 +75,23 @@ def main(page: ft.Page):
 
     def aggiungi_automobile(e):
         try:
-            if int(input_aggiungi_anno.value) > 0:
-                nuova_auto = aggiungi_automobile(input_aggiungi_marca, input_aggiungi_modello, input_aggiungi_anno, num_posti.value)
-                input_aggiungi_marca = ''
-                input_aggiungi_modello = ' '
-                input_aggiungi_anno = ' '
-        except ValueError:
-            raise Exception(f"Anno non valido")
+            if not input_aggiungi_anno.value.strip().isdigit():
+                alert.show_alert("❌ Inserisci un anno valido")
+                return
+
+            if int(num_posti.value) <= 0:
+                alert.show_alert("❌ Inserisci un numero di posti valido")
+                return
+            nuova_auto = autonoleggio.aggiungi_automobile(input_aggiungi_marca.value, input_aggiungi_modello.value, int(input_aggiungi_anno.value), int(num_posti.value))
+            input_aggiungi_marca.value = ''
+            input_aggiungi_modello.value = ''
+            input_aggiungi_anno.value = ''
+            num_posti.value = 0
+            stato = "✅" if nuova_auto.disponibile else "⛔"
+            lista_auto.controls.append(ft.Text(f"{stato} {nuova_auto}"))
+            page.update()
+        except Exception as e:
+            alert.show_alert(f"❌ Errore inserisci valori numerici per anno e posti: {e}")
 
         # aggiungo contatore
     btnMinus = ft.IconButton(icon=ft.Icons.REMOVE,
@@ -129,6 +139,7 @@ def main(page: ft.Page):
         ft.Row(spacing=20,
                controls=[pulsante_aggiungi_auto],
                alignment=ft.MainAxisAlignment.CENTER),
+
 
         # Sezione 4
         ft.Divider(),
